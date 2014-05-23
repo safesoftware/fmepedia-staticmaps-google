@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<meta charset="UTF-8">
+<head>
+	<!-- Safe Software, 2013 -->
+	<!-- http://www.safe.com -->
+	<title>Google StaticMaps and FME Server</title>
+	<!-- JQuery -->
+	<script src="libs/jquery-1.10.1.js"></script>
+	<!-- Bootstrap -->
+	<!--http://getbootstrap.com/2.3.2/-->
+	<script src="libs/bootstrap/js/bootstrap.js"></script>
+	<link href="libs/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="libs/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+	<!-- Stylesheet for demo/tutorial -->
+	<link rel="stylesheet" href="css/index.css">
+	<!-- FME Server Javascript API -->
+	<script type="text/javascript" src="http://api.fmeserver.com/js/v1/FMEServer.min.js"></script>
+</head>
+<body>
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">        
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</a>
+				<div class="brand">FME Server<span class="hidden-tiny"> Demos</span></div>
+					 
+				<div class="nav-collapse collapse">
+					<a href="https://github.com/safesoftware/fmepedia-staticmaps-google" class="btn">
+						<img src="libs/github.png"> Fork GitHub
+					</a>
+					<a href="https://github.com/safesoftware/fmepedia-staticmaps-google/archive/master.zip" class="btn">
+						<i class="icon-download-alt"></i> Download Zip
+					</a>
+				</div>
+				<span class="hidden-phone" id="safe-ribbon"><a href="http://www.safe.com">Powered by FME</a></span>
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+		<h3>Google StaticMaps and FME Server <small>Order a static map for a park in Austin</small></h1>
+		<!-- Create a HTML form to send the request to the FME Server -->
+		<form class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label" for="inputEmail">Email</label>
+				<div class="controls">
+					<!-- Input for the email address -->
+					<input type="text" name="email" id="inputEmail" placeholder="Email">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="park">Select a park</label>
+				<div class="controls">
+					<!-- Park selection drop-down list -->
+					<select id="park" name="park_name">
+						<option>East Destination</option>
+						<option>Morris Williams</option>
+						<option>T.A. Brown</option>
+						<option>Bartholomew</option>
+						<option>Pecan Springs</option>
+						<option>Dottie Jordan</option>
+						<option>Andrews</option>
+						<option>St. John's</option>
+						<option>Big Walnut Creek Preserve</option>
+						<option>Little Walnut Creek</option>
+						<option>Gus Garcia (Rundberg)</option>
+						<option>Meadows at Trinity Crossing</option>
+						<option>Schieffer Tract</option>
+						<option>Patterson</option>
+						<option>Pharr</option>
+					</select>
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="controls">
+					<label class="checkbox">
+						<!-- Geometry selection checkbox -->
+						<input type="checkbox" id="geometry" name="geometry" value="true"> Draw park geometry
+					</label>
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="controls">
+					<!-- Submit button -->
+					<input type="button" onclick="processRequest();" class="btn" value="Send Request" />
+				</div>
+			</div>
+		</form>
+		<div id="results"</div>
+	</div>
+	<script type="text/javascript">
+		var fmes;
+
+		window.onload = function(){
+			fmes = new FMEServer({
+				server : "http://fmepedia2014-safe-software.fmecloud.com",
+    			token : "fb1c3ee6828e6814c75512dd4770a02e73d913b8"
+			});
+		};
+
+		function processRequest(){
+			var email = document.getElementById("inputEmail");
+			var park = document.getElementById("park");
+			var geom = document.getElementById("geometry");
+			var geomDraw = false;
+			
+			if(geom.checked){
+				geomDraw = true;
+			}
+
+			// Parameters Object
+			var params = {
+				publishedParameters : [
+					{
+						name : email.name,
+						value : email.value
+					},
+					{
+						name : park.name,
+						value : park[park.selectedIndex].value
+					},
+					{
+						name : geom.name,
+						value : geomDraw
+					}
+				]
+			};
+
+			// FME Server submitJob( Repository, Workspace, Parameters Object, Callback Function );
+			fmes.submitJob("Demos", "staticmaps.fmw", params, function(json){
+				var html = "<hr /><p>Your Request has been submitted to the server.  You should recieve your email shortly.</p>";
+				html += "<p>Job ID: "+json.id+"</p>";
+				document.getElementById("results").innerHTML = html;
+			});
+		}
+	</script>
+</body>
+
+</html>
