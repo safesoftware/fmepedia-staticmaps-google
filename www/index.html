@@ -16,7 +16,7 @@
 	<!-- Stylesheet for demo/tutorial -->
 	<link rel="stylesheet" href="css/index.css">
 	<!-- FME Server Javascript API -->
-	<script type="text/javascript" src="http://api.fmeserver.com/js/v1/FMEServer.min.js"></script>
+	<script type="text/javascript" src="http://api.fmeserver.com/js/v1.1/FMEServer.js"></script>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top">
@@ -94,10 +94,9 @@
 		<div id="results"</div>
 	</div>
 	<script type="text/javascript">
-		var fmes;
 
 		window.onload = function(){
-			fmes = new FMEServer({
+			FMEServer.init({
 				server : "https://fmepedia2014-safe-software.fmecloud.com",
     			token : "fb1c3ee6828e6814c75512dd4770a02e73d913b8"
 			});
@@ -132,7 +131,7 @@
 			};
 
 			// FME Server submitJob( Repository, Workspace, Parameters Object, Callback Function );
-			fmes.submitJob("Demos", "staticmaps.fmw", params, function(json){
+			FMEServer.submitJob("Demos", "staticmaps.fmw", params, function(json){
 				var html = "<hr /><p>Your Request has been submitted to the server.  You should recieve your email shortly.</p>";
 				html += "<p>Job ID: "+json.id+"</p>";
 				document.getElementById("results").innerHTML = html;
